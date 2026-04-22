@@ -45,26 +45,77 @@ const NAV_LINKS = [
  * @returns {JSX.Element} The full responsive navigation bar.
  */
 export default function Navbar() {
-  /** Minimal state for visibility only. */
-  const [mounted, setMounted] = useState(false);
-  const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isDark, setIsDark] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
 
+  const [mounted, setMounted] = useState(false);
+
+  /** Subscribe to Firebase Auth state changes. */
   useEffect(() => {
     setMounted(true);
+    const auth = getFirebaseAuth();
+    if (!auth) return;
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return unsubscribe;
+  }, []);
+
+  /** Sync dark-mode preference from localStorage and system. */
+  useEffect(() => {
+    const stored = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const dark = stored === 'dark' || (!stored && prefersDark);
+    setIsDark(dark);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  }, []);
+
+  /** Toggles dark mode and persists the preference. */
+  const toggleDarkMode = useCallback(() => {
+    const next = !isDark;
+    setIsDark(next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light');
+  }, [isDark]);
+
+  /** Sign-in with Google. */
+  const handleSignIn = useCallback(async () => {
+    const auth = getFirebaseAuth();
+    if (!auth) return;
+    try {
+      setIsAuthLoading(true);
+      await signInWithPopup(auth, new GoogleAuthProvider());
+      trackAuthEvent('google');
+    } catch (error) {
+      console.error('[Navbar] Sign-in error:', error);
+    } finally {
+      setIsAuthLoading(false);
+    }
+  }, []);
+
+  /** Sign-out. */
+  const handleSignOut = useCallback(async () => {
+    const auth = getFirebaseAuth();
+    if (!auth) return;
+    try {
+      await signOut(auth);
+      setIsMenuOpen(false);
+    } catch (error) {
+      console.error('[Navbar] Sign-out error:', error);
+    }
   }, []);
 
   if (!mounted) return null;
 
   return (
     <header role="banner">
-      <nav
-        className="navbar glass-card"
-        aria-label="Main navigation"
-      >
-        <div className="navbar-container">
+      <nav className="navbar glass-card" aria-label="Main navigation">
+        <div className="container navbar-inner">
           {/* Logo / Brand */}
-          <Link href="/" className="navbar-brand" aria-label="ElectionGuide Home">
-            <span className="brand-icon" aria-hidden="true">🗳️</span>
+          <Link href="/" className="navbar-brand">
+            <span className="brand-icon">🗳️</span>
             <span className="brand-name gradient-text">ElectionGuide</span>
           </Link>
 
@@ -75,7 +126,6 @@ export default function Navbar() {
                 <Link
                   href={href}
                   className={`nav-link ${pathname === href ? 'nav-link--active' : ''}`}
-                  aria-current={pathname === href ? 'page' : undefined}
                 >
                   {label}
                 </Link>
@@ -84,11 +134,52 @@ export default function Navbar() {
           </ul>
 
           <div className="nav-actions">
-             <Link href="/assistant" className="btn btn-primary">
-               Get Started
-             </Link>
+            {/* Theme toggle */}
+            <button
+              onClick={toggleDarkMode}
+              className="icon-btn"
+              aria-label="Toggle theme"
+            >
+              {isDark ? '☀️' : '🌙'}
+            </button>
+
+            {/* Auth button */}
+            {user ? (
+              <div className="user-menu">
+                <img src={user.photoURL || ''} alt="" className="user-avatar" width={32} height={32} />
+                <button onClick={handleSignOut} className="btn btn-ghost">Sign Out</button>
+              </div>
+            ) : (
+              <button onClick={handleSignIn} className="btn btn-primary" disabled={isAuthLoading}>
+                {isAuthLoading ? '...' : 'Sign In'}
+              </button>
+            )}
+
+            {/* Mobile Toggle */}
+            <button className="hamburger-btn icon-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+               {isMenuOpen ? '✕' : '☰'}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="mobile-menu">
+             <ul role="list">
+              {NAV_LINKS.map(({ href, label }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className={`mobile-nav-link ${pathname === href ? 'nav-link--active' : ''}`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </nav>
 
       <style>{`
