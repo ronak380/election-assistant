@@ -20,7 +20,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Loader } from '@googlemaps/js-api-loader';
+import { Loader, importLibrary } from '@googlemaps/js-api-loader';
 import { haversineDistance, isWithinGeofence, type LatLng, type PollingStation } from '@/lib/geofence';
 import { trackPollingStationSearch } from '@/lib/analytics';
 
@@ -74,12 +74,13 @@ export default function PollingLocator() {
     setStatus('loading-map');
 
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
-    const loader = new Loader({ apiKey, version: 'weekly', libraries: ['marker'] });
-
     try {
-      await loader.load();
+      // v2.x API: Loader sets config; importLibrary() does the actual loading
+      new Loader({ apiKey, version: 'weekly' });
+      const mapsLib = await importLibrary('maps') as typeof google.maps;
+      const { Map: GoogleMap, Marker, InfoWindow, Size, Point, SymbolPath } = mapsLib;
 
-      const map = new google.maps.Map(mapRef.current, {
+      const map = new GoogleMap(mapRef.current, {
         center,
         zoom: 14,
         mapTypeId: 'roadmap',
@@ -94,12 +95,12 @@ export default function PollingLocator() {
       mapInstanceRef.current = map;
 
       // User location marker (blue dot)
-      new google.maps.Marker({
+      new Marker({
         position: center,
         map,
         title: 'Your Location',
         icon: {
-          path: google.maps.SymbolPath.CIRCLE,
+          path: SymbolPath.CIRCLE,
           scale: 10,
           fillColor: '#3b82f6',
           fillOpacity: 1,
@@ -118,7 +119,7 @@ export default function PollingLocator() {
 
       // Place markers for each station
       nearby.forEach((station) => {
-        const marker = new google.maps.Marker({
+        const marker = new Marker({
           position: station.location,
           map,
           title: station.name,
@@ -129,14 +130,14 @@ export default function PollingLocator() {
                 <path fill="#2563eb" d="M16 0C7.163 0 0 7.163 0 16c0 10.5 16 24 16 24S32 26.5 32 16C32 7.163 24.837 0 16 0z"/>
                 <text x="16" y="22" text-anchor="middle" fill="white" font-size="14">🗳️</text>
               </svg>`),
-            scaledSize: new google.maps.Size(32, 40),
-            anchor: new google.maps.Point(16, 40),
+            scaledSize: new Size(32, 40),
+            anchor: new Point(16, 40),
           },
         });
 
         markersRef.current.push(marker);
 
-        const infoWindow = new google.maps.InfoWindow({
+        const infoWindow = new InfoWindow({
           content: `
             <div style="padding:0.5rem;font-family:system-ui;max-width:200px;">
               <strong>${station.name}</strong>
