@@ -237,28 +237,34 @@ export default function ElectionChatbot() {
             {messages.length === 0 && (
               <div className="chat-empty-state">
                 <div className="chat-avatar" aria-hidden="true">🗳️</div>
-                <p className="chat-welcome">
-                  <strong>Hello! I&apos;m ElectionGuide AI.</strong>
-                  <br />
-                  Ask me anything about voter registration, polling stations, or the election process.
-                </p>
-                <div
-                  className="suggestions"
-                  role="list"
-                  aria-label="Suggested questions to ask"
-                >
-                  {SUGGESTIONS.map((s) => (
-                    <button
-                      key={s}
-                      role="listitem"
-                      onClick={() => sendMessage(s)}
-                      className="suggestion-chip"
-                      aria-label={`Ask: ${s}`}
+                {!mounted ? (
+                   <div className="spinner" />
+                ) : (
+                  <>
+                    <p className="chat-welcome">
+                      <strong>Hello! I&apos;m ElectionGuide AI.</strong>
+                      <br />
+                      Ask me anything about voter registration, polling stations, or the election process.
+                    </p>
+                    <div
+                      className="suggestions"
+                      role="list"
+                      aria-label="Suggested questions to ask"
                     >
-                      {s}
-                    </button>
-                  ))}
-                </div>
+                      {SUGGESTIONS.map((s) => (
+                        <button
+                          key={s}
+                          role="listitem"
+                          onClick={() => sendMessage(s)}
+                          className="suggestion-chip"
+                          aria-label={`Ask: ${s}`}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
