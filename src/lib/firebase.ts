@@ -12,7 +12,7 @@ import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getMessaging, type Messaging, isSupported } from 'firebase/messaging';
 
 /** Firebase client configuration pulled from environment variables. */
-const firebaseConfig = {
+const config = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
@@ -20,6 +20,14 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
+
+if (!config.apiKey) {
+  console.error('[Firebase] Missing NEXT_PUBLIC_FIREBASE_API_KEY');
+}
+
+if (!config.authDomain || !config.authDomain.includes('.')) {
+  console.warn('[Firebase] Warning: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN looks incomplete:', config.authDomain);
+}
 
 /** Cached Firebase App instance. */
 let _app: FirebaseApp | null = null;
@@ -35,11 +43,11 @@ function getFirebaseApp(): FirebaseApp | null {
   if (typeof window === 'undefined') return null;
   if (_app) return _app;
   try {
-    if (getApps().length > 0) {
-      _app = getApp();
-      return _app;
+    if (!config.apiKey || !config.authDomain) {
+      console.error('[Firebase] Initialization failed: Missing API Key or Auth Domain.');
+      return null;
     }
-    return (_app = initializeApp(firebaseConfig));
+    return (_app = initializeApp(config));
   } catch (error) {
     console.error('[firebase] Failed to initialize Firebase App:', error);
     return null;
