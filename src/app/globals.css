@@ -73,8 +73,8 @@
   --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Dark Mode */
-@media (prefers-color-scheme: dark), [data-theme='dark'] {
+/* Dark Mode — system preference */
+@media (prefers-color-scheme: dark) {
   :root {
     --bg-base: #020617;
     --bg-surface: rgba(15, 23, 42, 0.8);
@@ -94,6 +94,27 @@
     --glass-bg: rgba(15, 23, 42, 0.7);
     --glass-border: rgba(148, 163, 184, 0.1);
   }
+}
+
+/* Dark Mode — manual toggle via data-theme attribute */
+[data-theme='dark'] {
+  --bg-base: #020617;
+  --bg-surface: rgba(15, 23, 42, 0.8);
+  --bg-surface-hover: rgba(15, 23, 42, 0.95);
+  --bg-overlay: rgba(255, 255, 255, 0.05);
+  --bg-gradient: linear-gradient(135deg, #020617 0%, #0f172a 50%, #0a0f1e 100%);
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
+
+  --border-color: rgba(148, 163, 184, 0.1);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.3);
+
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(148, 163, 184, 0.1);
 }
 
 /* ============================================================================
