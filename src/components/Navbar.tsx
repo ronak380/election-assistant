@@ -51,8 +51,11 @@ export default function Navbar() {
   const [isDark, setIsDark] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
+  const [mounted, setMounted] = useState(false);
+
   /** Subscribe to Firebase Auth state changes. */
   useEffect(() => {
+    setMounted(true);
     const auth = getFirebaseAuth();
     if (!auth) return;
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -221,7 +224,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Dropdown Menu */}
-        {isMenuOpen && (
+        {mounted && isMenuOpen && (
           <div
             id="mobile-menu"
             className="mobile-menu"

@@ -37,7 +37,7 @@ export default function HomePage() {
   console.log('[HomePage] Rendering server-side...');
   return (
     <>
-      {/* <Navbar /> */}
+      <Navbar />
       <main id="main-content" tabIndex={-1}>
 
         {/* ------------------------------------------------------------------ */}
