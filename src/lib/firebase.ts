@@ -21,41 +21,50 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
 
+/** Cached Firebase App instance. */
+let _app: FirebaseApp | null = null;
+
 /**
  * Returns the singleton Firebase App instance.
- * Prevents multiple app initializations in Next.js hot-module replacement.
+ * Lazy-initialized to avoid build-time errors when env vars are missing.
  *
  * @returns {FirebaseApp} The initialized Firebase application instance.
  */
 function getFirebaseApp(): FirebaseApp {
-  return getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+  if (_app) return _app;
+  if (getApps().length > 0) {
+    _app = getApp();
+    return _app;
+  }
+  return (_app = initializeApp(firebaseConfig));
 }
 
-/** Singleton Firebase App instance. */
-const app: FirebaseApp = getFirebaseApp();
-
 /**
- * Firebase Authentication instance for client-side auth operations.
+ * Firebase Authentication instance (lazy).
  * Supports Google Sign-In, Email/Password, and Anonymous auth.
  */
-export const auth: Auth = getAuth(app);
+export function getFirebaseAuth(): Auth {
+  return getAuth(getFirebaseApp());
+}
 
 /**
- * Firestore database instance for reading/writing election data,
- * chat histories, and user preferences from the browser.
+ * Firestore database instance (lazy).
+ * Use this for reading/writing election data from the browser.
  */
-export const db: Firestore = getFirestore(app);
+export function getFirebaseDb(): Firestore {
+  return getFirestore(getFirebaseApp());
+}
 
 /**
  * Factory function to lazily retrieve the Firebase Messaging instance.
- * Returns null in environments where FCM is not supported (e.g., SSR, Safari without permissions).
+ * Returns null in environments where FCM is not supported (e.g., SSR, Safari).
  *
  * @returns {Promise<Messaging | null>} The Messaging instance or null if unsupported.
  */
 export async function getFirebaseMessaging(): Promise<Messaging | null> {
   const supported = await isSupported();
   if (!supported) return null;
-  return getMessaging(app);
+  return getMessaging(getFirebaseApp());
 }
 
-export { app };
+export { getFirebaseApp as getApp };

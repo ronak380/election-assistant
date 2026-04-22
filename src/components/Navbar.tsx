@@ -28,7 +28,7 @@ import {
   onAuthStateChanged,
   type User,
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { getFirebaseAuth } from '@/lib/firebase';
 import { trackAuthEvent } from '@/lib/analytics';
 
 /** Navigation links configuration. */
@@ -53,7 +53,7 @@ export default function Navbar() {
 
   /** Subscribe to Firebase Auth state changes. */
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(getFirebaseAuth(), (currentUser) => {
       setUser(currentUser);
     });
     return unsubscribe;
@@ -86,7 +86,7 @@ export default function Navbar() {
     try {
       setIsAuthLoading(true);
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      await signInWithPopup(getFirebaseAuth(), provider);
       trackAuthEvent('google');
     } catch (error) {
       console.error('[Navbar] Sign-in error:', error);
@@ -100,7 +100,7 @@ export default function Navbar() {
    */
   const handleSignOut = useCallback(async () => {
     try {
-      await signOut(auth);
+      await signOut(getFirebaseAuth());
       setIsMenuOpen(false);
     } catch (error) {
       console.error('[Navbar] Sign-out error:', error);

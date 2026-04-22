@@ -27,7 +27,7 @@ import {
   type FormEvent,
   type KeyboardEvent,
 } from 'react';
-import { auth } from '@/lib/firebase';
+import { getFirebaseAuth } from '@/lib/firebase';
 import { trackChatMessage } from '@/lib/analytics';
 
 /** Shape of a single chat message. */
@@ -96,7 +96,7 @@ export default function ElectionChatbot() {
    * @param {string} assistantReply - The assistant's response.
    */
   const persistHistory = useCallback(async (userMessage: string, assistantReply: string) => {
-    const user = auth.currentUser;
+    const user = getFirebaseAuth().currentUser;
     if (!user) return;
     try {
       const idToken = await user.getIdToken();
@@ -141,7 +141,7 @@ export default function ElectionChatbot() {
     const history = messages.flatMap((m) => [m.content]);
 
     try {
-      const user = auth.currentUser;
+      const user = getFirebaseAuth().currentUser;
       const idToken = user ? await user.getIdToken() : undefined;
 
       const response = await fetch('/api/chat', {
