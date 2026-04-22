@@ -34,11 +34,16 @@ let _app: FirebaseApp | null = null;
 function getFirebaseApp(): FirebaseApp | null {
   if (typeof window === 'undefined') return null;
   if (_app) return _app;
-  if (getApps().length > 0) {
-    _app = getApp();
-    return _app;
+  try {
+    if (getApps().length > 0) {
+      _app = getApp();
+      return _app;
+    }
+    return (_app = initializeApp(firebaseConfig));
+  } catch (error) {
+    console.error('[firebase] Failed to initialize Firebase App:', error);
+    return null;
   }
-  return (_app = initializeApp(firebaseConfig));
 }
 
 /**
