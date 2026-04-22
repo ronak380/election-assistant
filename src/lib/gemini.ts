@@ -48,7 +48,7 @@ export function getGeminiClient(): GoogleGenAI {
     // they need to provide project and location.
     const project = process.env.GOOGLE_CLOUD_PROJECT;
     const apiKey = process.env.GEMINI_API_KEY; // Fallback to API Key if present
-    const location = process.env.GOOGLE_CLOUD_LOCATION ?? 'us-central1';
+    const location = process.env.GOOGLE_CLOUD_LOCATION ?? 'europe-west1';
 
     if (apiKey) {
       geminiClient = new GoogleGenAI({ apiKey });

@@ -53,7 +53,7 @@ steps:
       - 'build'
       # --- Build-time public env vars (baked into Next.js bundle) ---
       - '--build-arg'
-      - 'GOOGLE_CLOUD_PROJECT=$_AR_PROJECT_ID'
+      - 'GOOGLE_CLOUD_PROJECT=$PROJECT_ID'
       - '--build-arg'
       - 'GOOGLE_CLOUD_LOCATION=$_DEPLOY_REGION'
       - '--build-arg'
@@ -63,7 +63,7 @@ steps:
       - '--build-arg'
       - 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$_FIREBASE_AUTH_DOMAIN'
       - '--build-arg'
-      - 'NEXT_PUBLIC_FIREBASE_PROJECT_ID=$_AR_PROJECT_ID'
+      - 'NEXT_PUBLIC_FIREBASE_PROJECT_ID=$PROJECT_ID'
       - '--build-arg'
       - 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=$_FIREBASE_STORAGE_BUCKET'
       - '--build-arg'
@@ -76,12 +76,12 @@ steps:
       - 'NEXT_PUBLIC_GTM_ID=$_GTM_ID'
       # --- Image tags ---
       - '--tag'
-      - '$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:$COMMIT_SHA'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:$COMMIT_SHA'
       - '--tag'
-      - '$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:latest'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:latest'
       # --- Use cached latest image to speed up builds ---
       - '--cache-from'
-      - '$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:latest'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:latest'
       - '.'
     waitFor: ['test', 'lint']
 
@@ -111,7 +111,7 @@ steps:
       - 'deploy'
       - '$_SERVICE_NAME'
       - '--image'
-      - '$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:$COMMIT_SHA'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:$COMMIT_SHA'
       - '--region'
       - '$_DEPLOY_REGION'
       - '--platform'
@@ -135,8 +135,8 @@ steps:
 # Images to push to Artifact Registry
 # ---------------------------------------------------------------------------
 images:
-  - '$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:$COMMIT_SHA'
-  - '$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:latest'
+  - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:$COMMIT_SHA'
+  - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:latest'
 
 # ---------------------------------------------------------------------------
 # Build options — use Cloud Logging for Cloud Logging integration
