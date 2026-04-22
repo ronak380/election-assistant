@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 /**
  * LocatorPage renders the interactive polling station map.
  *
- * @returns {JSX.Element} The polling station locator page.
+ * @returns The polling station locator page.
  */
-export default function LocatorPage(): JSX.Element {
+export default function LocatorPage() {
   return (
     <>
       <Navbar />

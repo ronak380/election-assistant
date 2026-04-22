@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 /**
  * TimelinePage renders the interactive election process timeline.
  *
- * @returns {JSX.Element} The election timeline page.
+ * @returns The election timeline page.
  */
-export default function TimelinePage(): JSX.Element {
+export default function TimelinePage() {
   return (
     <>
       <Navbar />

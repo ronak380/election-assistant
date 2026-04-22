@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 /**
  * AssistantPage renders the AI chatbot interface.
  *
- * @returns {JSX.Element} The AI assistant page.
+ * @returns The AI assistant page.
  */
-export default function AssistantPage(): JSX.Element {
+export default function AssistantPage() {
   return (
     <>
       <Navbar />

@@ -33,7 +33,7 @@ export const metadata: Metadata = {
  *
  * @returns {JSX.Element} The complete landing page.
  */
-export default function HomePage(): JSX.Element {
+export default function HomePage() {
   return (
     <>
       <Navbar />

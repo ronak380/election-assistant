@@ -40,7 +40,7 @@ interface PhaseCardProps {
  * @param {PhaseCardProps} props - Component props.
  * @returns {JSX.Element} An accessible, animatable election phase card.
  */
-function PhaseCard({ phase, isExpanded, onToggle }: PhaseCardProps): JSX.Element {
+function PhaseCard({ phase, isExpanded, onToggle }: PhaseCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const detailsId = `phase-details-${phase.id}`;
   const toggleId = `phase-toggle-${phase.id}`;
@@ -129,7 +129,7 @@ function PhaseCard({ phase, isExpanded, onToggle }: PhaseCardProps): JSX.Element
  *
  * @returns {JSX.Element} The complete election process timeline.
  */
-export default function ElectionTimeline(): JSX.Element {
+export default function ElectionTimeline() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   /**

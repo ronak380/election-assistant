@@ -70,7 +70,7 @@ function generateId(): string {
  *
  * @returns {JSX.Element} The fully interactive chatbot UI.
  */
-export default function ElectionChatbot(): JSX.Element {
+export default function ElectionChatbot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);

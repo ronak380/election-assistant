@@ -44,7 +44,7 @@ const NAV_LINKS = [
  *
  * @returns {JSX.Element} The full responsive navigation bar.
  */
-export default function Navbar(): JSX.Element {
+export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);

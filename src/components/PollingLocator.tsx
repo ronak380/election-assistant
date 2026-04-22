@@ -51,7 +51,7 @@ type LocationStatus =
  *
  * @returns {JSX.Element} The interactive polling station map and controls.
  */
-export default function PollingLocator(): JSX.Element {
+export default function PollingLocator() {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
 
