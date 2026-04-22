@@ -5,7 +5,8 @@
  */
 
 import type { Metadata } from 'next';
-import { ClientNavbar, ClientChatbot } from '@/components/ClientShell';
+import Navbar from '@/components/Navbar';
+import ElectionChatbot from '@/components/ElectionChatbot';
 
 /** SEO metadata specific to the AI assistant page. */
 export const metadata: Metadata = {
@@ -22,9 +23,9 @@ export const metadata: Metadata = {
 export default function AssistantPage() {
   return (
     <>
-      <ClientNavbar />
+      <Navbar />
       <main id="main-content" tabIndex={-1}>
-        <ClientChatbot />
+        <ElectionChatbot />
       </main>
     </>
   );

@@ -17,7 +17,7 @@
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ClientNavbar } from '@/components/ClientShell';
+import Navbar from '@/components/Navbar';
 import { ELECTION_FAQS } from '@/lib/election-data';
 
 /** Page-level metadata for SEO. */
@@ -37,7 +37,7 @@ export default function HomePage() {
   console.log('[HomePage] Rendering server-side...');
   return (
     <>
-      <ClientNavbar />
+      <Navbar />
       <main id="main-content" tabIndex={-1}>
 
         {/* ------------------------------------------------------------------ */}
