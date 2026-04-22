@@ -11,7 +11,10 @@
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { adminAuth, adminMessaging } from '@/lib/firebase-admin';
+import { getAdminAuth, getAdminMessaging } from '@/lib/firebase-admin';
+
+/** Force dynamic rendering — this route uses runtime env vars (Firebase Admin). */
+export const dynamic = 'force-dynamic';
 
 /**
  * Expected request body for the notification endpoint.
@@ -60,7 +63,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   // --- Verify Firebase ID Token ---
   try {
-    await adminAuth.verifyIdToken(idToken);
+    await getAdminAuth().verifyIdToken(idToken);
   } catch {
     return NextResponse.json(
       { error: 'Unauthorized. Invalid or expired Firebase ID token.' },
@@ -70,7 +73,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   // --- Send FCM Notification via Admin SDK ---
   try {
-    const messageId = await adminMessaging.send({
+    const messageId = await getAdminMessaging().send({
       token: fcmToken,
       notification: { title, body: notifBody },
       webpush: {

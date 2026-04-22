@@ -13,16 +13,21 @@ import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getMessaging, type Messaging } from 'firebase-admin/messaging';
 
+/** Cached Admin App instance — null until first use. */
+let _adminApp: App | null = null;
+
 /**
  * Returns the singleton Firebase Admin App instance.
- * Prevents re-initialization on hot module reloads during Next.js development.
+ * Lazy-initialized on first call so it doesn't run at build time.
  *
  * @returns {App} The initialized Firebase Admin application instance.
  * @throws {Error} If required environment variables are missing.
  */
 function getAdminApp(): App {
+  if (_adminApp) return _adminApp;
   if (getApps().length > 0) {
-    return getApps()[0];
+    _adminApp = getApps()[0];
+    return _adminApp;
   }
 
   const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
@@ -36,29 +41,33 @@ function getAdminApp(): App {
     );
   }
 
-  return initializeApp({
+  _adminApp = initializeApp({
     credential: cert({ projectId, clientEmail, privateKey }),
     projectId,
   });
+  return _adminApp;
 }
 
-/** Singleton Admin App instance. */
-const adminApp: App = getAdminApp();
-
 /**
- * Firebase Admin Firestore instance.
+ * Firebase Admin Firestore instance (lazy).
  * Use this on the server side to bypass Security Rules with full admin access.
  */
-export const adminDb: Firestore = getFirestore(adminApp);
+export function getAdminDb(): Firestore {
+  return getFirestore(getAdminApp());
+}
 
 /**
- * Firebase Admin Auth instance.
+ * Firebase Admin Auth instance (lazy).
  * Use this to verify ID tokens from authenticated client requests.
  */
-export const adminAuth: Auth = getAuth(adminApp);
+export function getAdminAuth(): Auth {
+  return getAuth(getAdminApp());
+}
 
 /**
- * Firebase Admin Messaging instance.
+ * Firebase Admin Messaging instance (lazy).
  * Use this to send FCM push notifications from server-side API routes.
  */
-export const adminMessaging: Messaging = getMessaging(adminApp);
+export function getAdminMessaging(): Messaging {
+  return getMessaging(getAdminApp());
+}

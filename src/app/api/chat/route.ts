@@ -14,7 +14,10 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { generateElectionResponse } from '@/lib/gemini';
-import { adminAuth } from '@/lib/firebase-admin';
+import { getAdminAuth } from '@/lib/firebase-admin';
+
+/** Force dynamic rendering — this route uses runtime env vars (Firebase Admin). */
+export const dynamic = 'force-dynamic';
 
 /** In-memory rate-limiter store: maps IP → [timestamp array]. */
 const rateLimitMap = new Map<string, number[]>();
@@ -121,7 +124,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   let uid: string | null = null;
   if (idToken) {
     try {
-      const decoded = await adminAuth.verifyIdToken(idToken);
+      const decoded = await getAdminAuth().verifyIdToken(idToken);
       uid = decoded.uid;
     } catch {
       // Invalid token — fall through as anonymous user (don't block request)

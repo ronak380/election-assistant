@@ -11,8 +11,11 @@
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { adminAuth, adminDb } from '@/lib/firebase-admin';
+import { getAdminAuth, getAdminDb } from '@/lib/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
+
+/** Force dynamic rendering — this route uses runtime env vars (Firebase Admin). */
+export const dynamic = 'force-dynamic';
 
 /**
  * Extracts and verifies the Firebase ID token from the Authorization header.
@@ -27,7 +30,7 @@ async function getVerifiedUid(request: NextRequest): Promise<string> {
     throw new Error('Missing or malformed Authorization header.');
   }
   const idToken = authHeader.slice(7);
-  const decoded = await adminAuth.verifyIdToken(idToken);
+  const decoded = await getAdminAuth().verifyIdToken(idToken);
   return decoded.uid;
 }
 
@@ -49,7 +52,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const snapshot = await adminDb
+    const snapshot = await getAdminDb()
       .collection('chatHistory')
       .doc(uid)
       .collection('messages')
@@ -116,7 +119,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const docRef = await adminDb
+    const docRef = await getAdminDb()
       .collection('chatHistory')
       .doc(uid)
       .collection('messages')
