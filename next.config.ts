@@ -52,9 +52,9 @@ const nextConfig: NextConfig = {
 
   /**
    * HTTP response headers for additional security coverage.
-   * CSP is primarily managed in src/middleware.ts.
-   * These headers cover cases where middleware might not run.
+   * Temporarily disabling to debug the crash.
    */
+  /*
   async headers() {
     return [
       {
@@ -75,6 +75,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  */
 
   /**
    * Redirect www to non-www for canonical URLs.
