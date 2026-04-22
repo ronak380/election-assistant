@@ -51,7 +51,7 @@ export function getGeminiClient(): GoogleGenAI {
     const location = process.env.GOOGLE_CLOUD_LOCATION ?? 'us-central1';
 
     if (apiKey) {
-      geminiClient = new GoogleGenAI(apiKey);
+      geminiClient = new GoogleGenAI({ apiKey });
     } else if (project) {
       // Vertex AI initialization via @google/genai (if supported in this version)
       // Note: For full Vertex AI features, @google-cloud/vertexai is preferred.
