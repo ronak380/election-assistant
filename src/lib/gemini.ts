@@ -11,12 +11,11 @@
 
 import { GoogleGenAI, type GenerateContentResponse } from '@google/genai';
 
-/** The Gemini model to use — targeting Gemini 2.5 Flash for low latency. */
-export const GEMINI_MODEL = 'gemini-2.5-flash-preview-04-17';
+/** The Gemini model to use — targeting Gemini 1.5 Flash for stable performance and low latency. */
+export const GEMINI_MODEL = 'gemini-1.5-flash';
 
 /**
  * System prompt that constrains Gemini to only answer election-related questions.
- * Injected as the first message in every chat session.
  */
 export const ELECTION_SYSTEM_PROMPT = `You are "ElectionGuide AI", an expert, friendly, and impartial assistant that helps citizens understand:
 - Voter registration processes and deadlines
@@ -34,77 +33,77 @@ Guidelines:
 
 /**
  * Singleton lazy-initialized Gemini AI client.
- * Initialized on first call to getGeminiClient() to avoid startup-time errors
- * when environment variables may not yet be set.
  */
 let geminiClient: GoogleGenAI | null = null;
 
 /**
  * Returns the singleton Gemini AI client instance.
- * Uses Application Default Credentials (ADC) in production (Cloud Run).
- * Requires GOOGLE_CLOUD_PROJECT environment variable to be set.
  *
  * @returns {GoogleGenAI} The initialized Google Generative AI client.
- * @throws {Error} If GOOGLE_CLOUD_PROJECT is not set.
  */
 export function getGeminiClient(): GoogleGenAI {
   if (!geminiClient) {
+    // If using the @google/genai package, we typically need an API Key.
+    // However, if the user is using the Vertex AI shim in @google/genai,
+    // they need to provide project and location.
     const project = process.env.GOOGLE_CLOUD_PROJECT;
+    const apiKey = process.env.GEMINI_API_KEY; // Fallback to API Key if present
     const location = process.env.GOOGLE_CLOUD_LOCATION ?? 'us-central1';
 
-    if (!project) {
+    if (apiKey) {
+      geminiClient = new GoogleGenAI(apiKey);
+    } else if (project) {
+      // Vertex AI initialization via @google/genai (if supported in this version)
+      // Note: For full Vertex AI features, @google-cloud/vertexai is preferred.
+      geminiClient = new GoogleGenAI({
+        // @ts-ignore - vertexai might not be in the types but is supported in the runtime for some versions
+        vertexai: true,
+        project,
+        location,
+      });
+    } else {
       throw new Error(
-        '[gemini] GOOGLE_CLOUD_PROJECT environment variable is not set.'
+        '[gemini] Neither GEMINI_API_KEY nor GOOGLE_CLOUD_PROJECT is set.'
       );
     }
-
-    geminiClient = new GoogleGenAI({
-      vertexai: true,
-      project,
-      location,
-    });
   }
 
   return geminiClient;
 }
 
 /**
- * Sends a single message to Gemini 2.5 and returns the text response.
- * For use in the /api/chat API route.
- *
- * @param {string[]} history - Array of alternating user/model messages for context.
- * @param {string} userMessage - The latest message from the user.
- * @returns {Promise<string>} The text content from Gemini's response.
- * @throws {Error} If the Gemini API call fails or returns an empty response.
+ * Sends a single message to Gemini and returns the text response.
  */
 export async function generateElectionResponse(
   history: string[],
   userMessage: string
 ): Promise<string> {
-  const client = getGeminiClient();
+  try {
+    const client = getGeminiClient();
+    const model = client.getGenerativeModel({ model: GEMINI_MODEL });
 
-  const contents = [
-    // Inject the system prompt as the first user turn with a model acknowledgement
-    { role: 'user', parts: [{ text: ELECTION_SYSTEM_PROMPT }] },
-    { role: 'model', parts: [{ text: 'Understood. I am ready to help citizens with election-related questions.' }] },
-    // Add the conversation history
-    ...history.map((msg, i) => ({
-      role: i % 2 === 0 ? 'user' : 'model' as 'user' | 'model',
-      parts: [{ text: msg }],
-    })),
-    // Add the latest user message
-    { role: 'user' as const, parts: [{ text: userMessage }] },
-  ];
+    const chat = model.startChat({
+      history: [
+        { role: 'user', parts: [{ text: ELECTION_SYSTEM_PROMPT }] },
+        { role: 'model', parts: [{ text: 'Understood. I am ElectionGuide AI, ready to assist with election-related inquiries.' }] },
+        ...history.map((msg, i) => ({
+          role: i % 2 === 0 ? 'user' : 'model',
+          parts: [{ text: msg }],
+        })),
+      ],
+    });
 
-  const response: GenerateContentResponse = await client.models.generateContent({
-    model: GEMINI_MODEL,
-    contents,
-  });
+    const result = await chat.sendMessage(userMessage);
+    const response = await result.response;
+    const text = response.text();
 
-  const text = response.text;
-  if (!text) {
-    throw new Error('[gemini] Received empty response from Gemini API.');
+    if (!text) {
+      throw new Error('[gemini] Received empty response from Gemini API.');
+    }
+
+    return text;
+  } catch (error) {
+    console.error('[gemini] Generation error:', error);
+    throw new Error('Failed to generate response from AI Assistant.');
   }
-
-  return text;
 }

@@ -53,7 +53,9 @@ export default function Navbar() {
 
   /** Subscribe to Firebase Auth state changes. */
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(getFirebaseAuth(), (currentUser) => {
+    const auth = getFirebaseAuth();
+    if (!auth) return;
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
     return unsubscribe;
@@ -83,10 +85,15 @@ export default function Navbar() {
    * Tracks the authentication event for GA4 analytics.
    */
   const handleSignIn = useCallback(async () => {
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      console.error('[Navbar] Firebase Auth not initialized.');
+      return;
+    }
     try {
       setIsAuthLoading(true);
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(getFirebaseAuth(), provider);
+      await signInWithPopup(auth, provider);
       trackAuthEvent('google');
     } catch (error) {
       console.error('[Navbar] Sign-in error:', error);
@@ -99,8 +106,10 @@ export default function Navbar() {
    * Signs the current user out of Firebase Authentication.
    */
   const handleSignOut = useCallback(async () => {
+    const auth = getFirebaseAuth();
+    if (!auth) return;
     try {
-      await signOut(getFirebaseAuth());
+      await signOut(auth);
       setIsMenuOpen(false);
     } catch (error) {
       console.error('[Navbar] Sign-out error:', error);

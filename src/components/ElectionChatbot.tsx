@@ -96,7 +96,8 @@ export default function ElectionChatbot() {
    * @param {string} assistantReply - The assistant's response.
    */
   const persistHistory = useCallback(async (userMessage: string, assistantReply: string) => {
-    const user = getFirebaseAuth().currentUser;
+    const auth = getFirebaseAuth();
+    const user = auth?.currentUser;
     if (!user) return;
     try {
       const idToken = await user.getIdToken();
@@ -141,7 +142,8 @@ export default function ElectionChatbot() {
     const history = messages.flatMap((m) => [m.content]);
 
     try {
-      const user = getFirebaseAuth().currentUser;
+      const auth = getFirebaseAuth();
+      const user = auth?.currentUser;
       const idToken = user ? await user.getIdToken() : undefined;
 
       const response = await fetch('/api/chat', {

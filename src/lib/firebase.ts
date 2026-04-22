@@ -27,10 +27,12 @@ let _app: FirebaseApp | null = null;
 /**
  * Returns the singleton Firebase App instance.
  * Lazy-initialized to avoid build-time errors when env vars are missing.
+ * Ensures initialization only happens on the client side.
  *
- * @returns {FirebaseApp} The initialized Firebase application instance.
+ * @returns {FirebaseApp | null} The initialized Firebase application instance, or null if on server.
  */
-function getFirebaseApp(): FirebaseApp {
+function getFirebaseApp(): FirebaseApp | null {
+  if (typeof window === 'undefined') return null;
   if (_app) return _app;
   if (getApps().length > 0) {
     _app = getApp();
@@ -41,30 +43,35 @@ function getFirebaseApp(): FirebaseApp {
 
 /**
  * Firebase Authentication instance (lazy).
- * Supports Google Sign-In, Email/Password, and Anonymous auth.
+ * Returns null if called on the server.
  */
-export function getFirebaseAuth(): Auth {
-  return getAuth(getFirebaseApp());
+export function getFirebaseAuth(): Auth | null {
+  const app = getFirebaseApp();
+  return app ? getAuth(app) : null;
 }
 
 /**
  * Firestore database instance (lazy).
- * Use this for reading/writing election data from the browser.
+ * Returns null if called on the server.
  */
-export function getFirebaseDb(): Firestore {
-  return getFirestore(getFirebaseApp());
+export function getFirebaseDb(): Firestore | null {
+  const app = getFirebaseApp();
+  return app ? getFirestore(app) : null;
 }
 
 /**
  * Factory function to lazily retrieve the Firebase Messaging instance.
  * Returns null in environments where FCM is not supported (e.g., SSR, Safari).
  *
- * @returns {Promise<Messaging | null>} The Messaging instance or null if unsupported.
+ * @returns {Promise<Messaging | null>} The Messaging instance or null if unsupported/server.
  */
 export async function getFirebaseMessaging(): Promise<Messaging | null> {
+  if (typeof window === 'undefined') return null;
+  const app = getFirebaseApp();
+  if (!app) return null;
   const supported = await isSupported();
   if (!supported) return null;
-  return getMessaging(getFirebaseApp());
+  return getMessaging(app);
 }
 
 export { getFirebaseApp as getApp };
