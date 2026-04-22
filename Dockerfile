@@ -106,9 +106,10 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy only the necessary output from the builder stage
-COPY --from=builder /app/public ./public
+# The standalone folder contains the server.js and a minimal node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 # Switch to non-root user
 USER nextjs
@@ -117,10 +118,6 @@ USER nextjs
 EXPOSE 8080
 ENV PORT=8080
 ENV HOSTNAME="0.0.0.0"
-
-# Health check for Cloud Run
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/ || exit 1
 
 # Start the Next.js standalone server
 CMD ["node", "server.js"]
