@@ -82,7 +82,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   console.log('[RootLayout] Rendering server-side...');
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
         {/* Preconnect to Google Fonts and Maps for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
