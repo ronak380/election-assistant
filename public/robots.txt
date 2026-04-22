@@ -1,0 +1,12 @@
+/**
+ * @file public/robots.txt
+ * @description Robots exclusion file for search engine crawlers.
+ *              Allows all crawlers to index all public pages.
+ *              Provides the sitemap location for SEO.
+ */
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://election-guide.run.app/sitemap.xml
