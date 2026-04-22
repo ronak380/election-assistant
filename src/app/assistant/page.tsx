@@ -5,10 +5,7 @@
  */
 
 import type { Metadata } from 'next';
-import dynamic from 'next/dynamic';
-
-const Navbar = dynamic(() => import('@/components/Navbar'), { ssr: false });
-const ElectionChatbot = dynamic(() => import('@/components/ElectionChatbot'), { ssr: false });
+import { ClientNavbar, ClientChatbot } from '@/components/ClientShell';
 
 /** SEO metadata specific to the AI assistant page. */
 export const metadata: Metadata = {
@@ -25,9 +22,9 @@ export const metadata: Metadata = {
 export default function AssistantPage() {
   return (
     <>
-      <Navbar />
+      <ClientNavbar />
       <main id="main-content" tabIndex={-1}>
-        <ElectionChatbot />
+        <ClientChatbot />
       </main>
     </>
   );
