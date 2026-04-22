@@ -17,7 +17,9 @@
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
+import dynamic from 'next/dynamic';
+
+const Navbar = dynamic(() => import('@/components/Navbar'), { ssr: false });
 import { ELECTION_FAQS } from '@/lib/election-data';
 
 /** Page-level metadata for SEO. */
