@@ -96,18 +96,18 @@ export default function PollingLocator() {
       });
       mapInstanceRef.current = map;
 
-      // User location marker (blue dot)
+      // User location marker
       new Marker({
         position: center,
         map,
         title: 'Your Location',
         icon: {
-          path: SymbolPath.CIRCLE,
-          scale: 10,
-          fillColor: '#3b82f6',
+          path: 0, // SymbolPath.CIRCLE
+          fillColor: '#2563eb',
           fillOpacity: 1,
-          strokeColor: '#ffffff',
-          strokeWeight: 3,
+          strokeColor: 'white',
+          strokeWeight: 2,
+          scale: 10,
         },
       });
 

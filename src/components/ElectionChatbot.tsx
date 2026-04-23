@@ -237,7 +237,7 @@ export default function ElectionChatbot() {
             <span className="gradient-text">Election Assistant AI</span>
           </h2>
           <p className="section-subtitle">
-            Powered by Gemini 2.5 — ask anything about the voting process.
+            Powered by Gemini 2.0 — ask anything about the voting process.
           </p>
         </header>
 
