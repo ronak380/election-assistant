@@ -80,7 +80,6 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  console.log('[RootLayout] Rendering server-side...');
   return (
     <html lang="en">
       <head>

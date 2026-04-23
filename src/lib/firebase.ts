@@ -6,7 +6,7 @@
  *              they are protected by Firebase Security Rules, NOT secrecy.
  */
 
-import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getMessaging, type Messaging, isSupported } from 'firebase/messaging';
@@ -87,4 +87,5 @@ export async function getFirebaseMessaging(): Promise<Messaging | null> {
   return getMessaging(app);
 }
 
-export { getFirebaseApp as getApp };
+/** @deprecated Use getFirebaseAuth(), getFirebaseDb(), or getFirebaseMessaging() directly. */
+export { getFirebaseApp as getFirebaseAppInstance };

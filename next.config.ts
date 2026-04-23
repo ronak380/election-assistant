@@ -4,9 +4,9 @@
  *
  *              Key settings:
  *              - Standalone output for Docker/Cloud Run deployment
- *              - Strict security headers (additional layer on top of middleware)
+ *              - Security headers (additional layer on top of middleware CSP)
+ *              - Aggressive caching for static assets
  *              - Image optimization for Google domains
- *              - Bundle analyzer support (via ANALYZE env var)
  *
  * @see https://nextjs.org/docs/app/api-reference/config/next-config-js
  */
@@ -16,7 +16,7 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   /**
    * Standalone output mode bundles only the necessary files for production.
-   * Required for the multi-stage Dockerfile to work correctly.
+   * Required for the multi-stage Dockerfile to work correctly with Cloud Run.
    */
   output: 'standalone',
 
@@ -27,8 +27,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   /**
-   * Allow images from Google and Firebase domains to be optimized
-   * by Next.js Image component.
+   * Allow images from Google and Firebase domains to be optimised
+   * by the Next.js Image component.
    */
   images: {
     remotePatterns: [
@@ -51,10 +51,9 @@ const nextConfig: NextConfig = {
   },
 
   /**
-   * HTTP response headers for additional security coverage.
-   * Temporarily disabling to debug the crash.
+   * HTTP response headers for security and performance.
+   * These complement the CSP set in middleware.ts with caching and framing rules.
    */
-  /*
   async headers() {
     return [
       {
@@ -67,18 +66,24 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Cache static assets aggressively (immutable since they have content hashes)
+        // Cache static assets aggressively — they have content hashes so immutable is safe
         source: '/_next/static/(.*)',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
+      {
+        // Short-lived cache for HTML pages (always revalidate)
+        source: '/((?!_next/static|_next/image|favicon.ico).*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+        ],
+      },
     ];
   },
-  */
 
   /**
-   * Redirect www to non-www for canonical URLs.
+   * Redirect /home to / for canonical URL consistency.
    */
   async redirects() {
     return [

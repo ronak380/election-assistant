@@ -218,7 +218,7 @@ export default function PollingLocator() {
             <span className="gradient-text">Find Your Polling Station</span>
           </h2>
           <p className="section-subtitle">
-            Powered by Gemini 1.5 — ask anything about the voting process.
+            Find nearby polling stations powered by Google Maps.
           </p>
         </header>
 

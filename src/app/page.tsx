@@ -34,7 +34,6 @@ export const metadata: Metadata = {
  * @returns {JSX.Element} The complete landing page.
  */
 export default function HomePage() {
-  console.log('[HomePage] Rendering server-side...');
   return (
     <>
       <Navbar />

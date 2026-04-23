@@ -144,8 +144,9 @@ export default function ElectionChatbot() {
     setError(null);
     trackChatMessage(trimmed);
 
-    // Build flat history array for the API (alternating user/model strings)
-    const history = messages.flatMap((m) => [m.content]);
+    // Build flat history array for the API — trim to last 6 entries (3 turns)
+    // to keep token usage low on the free tier
+    const history = messages.flatMap((m) => [m.content]).slice(-6);
 
     try {
       const auth = getFirebaseAuth();
@@ -237,7 +238,7 @@ export default function ElectionChatbot() {
             <span className="gradient-text">Election Assistant AI</span>
           </h2>
           <p className="section-subtitle">
-            Powered by Gemini 1.5 — ask anything about the voting process.
+            Powered by Gemini 2.5 AI — ask anything about voting and elections.
           </p>
         </header>
 
@@ -478,8 +479,12 @@ export default function ElectionChatbot() {
         .chat-input:disabled { opacity: 0.6; cursor: not-allowed; }
         .chat-send-btn { border-radius: var(--radius-md); padding: 0.75rem; flex-shrink: 0; }
         @media (max-width: 640px) {
-          .chat-log { height: 360px; }
-          .suggestions { flex-direction: column; }
+          .chatbot-section { padding-block: 2rem; }
+          .chat-log { height: 320px; padding: 1rem; }
+          .suggestions { flex-direction: column; gap: 0.375rem; }
+          .suggestion-chip { font-size: 0.8rem; padding: 0.5rem 0.875rem; }
+          .chat-input-form { padding: 0.75rem 1rem; gap: 0.5rem; }
+          .chat-input { font-size: 0.875rem; }
         }
       `}</style>
     </section>
