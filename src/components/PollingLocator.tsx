@@ -74,8 +74,9 @@ export default function PollingLocator() {
     setStatus('loading-map');
 
     try {
+      // @ts-ignore - The new v2 functional API uses 'key' instead of 'apiKey'
       setOptions({
-        apiKey,
+        key: apiKey,
         version: 'weekly',
       });
       const mapsLib = await importLibrary('maps') as typeof google.maps;
