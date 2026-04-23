@@ -11,8 +11,8 @@
 
 import { GoogleGenAI, type GenerateContentResponse } from '@google/genai';
 
-/** The Gemini model to use — targeting Gemini 2.0 Flash for superior stability and reasoning. */
-export const GEMINI_MODEL = 'gemini-2.0-flash-exp';
+/** The Gemini model to use — targeting Gemini 1.5 Flash for superior stability. */
+export const GEMINI_MODEL = 'gemini-1.5-flash';
 
 /**
  * System prompt that constrains Gemini to only answer election-related questions.

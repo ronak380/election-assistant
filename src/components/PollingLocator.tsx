@@ -80,7 +80,8 @@ export default function PollingLocator() {
         version: 'weekly',
       } as any);
       const mapsLib = await importLibrary('maps') as typeof google.maps;
-      const { Map: GoogleMap, Marker, InfoWindow, Size, Point, SymbolPath } = mapsLib;
+      const { Marker } = await importLibrary('marker') as typeof google.maps.marker;
+      const { Map: GoogleMap, InfoWindow, Size, Point, SymbolPath } = mapsLib;
 
       const map = new GoogleMap(mapRef.current, {
         center,
@@ -97,7 +98,7 @@ export default function PollingLocator() {
       mapInstanceRef.current = map;
 
       // User location marker
-      new mapsLib.Marker({
+      new Marker({
         position: center,
         map,
         title: 'Your Location',
@@ -228,7 +229,7 @@ export default function PollingLocator() {
             <span className="gradient-text">Find Your Polling Station</span>
           </h2>
           <p className="section-subtitle">
-            Powered by Gemini 2.0 — ask anything about the voting process.
+            Powered by Gemini 1.5 — ask anything about the voting process.
           </p>
         </header>
 
