@@ -51,6 +51,7 @@ export default function Navbar() {
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
   /** Subscribe to Firebase Auth state changes. */
   useEffect(() => {
@@ -126,6 +127,7 @@ export default function Navbar() {
                 <Link
                   href={href}
                   className={`nav-link ${pathname === href ? 'nav-link--active' : ''}`}
+                  aria-current={pathname === href ? 'page' : undefined}
                 >
                   {label}
                 </Link>
