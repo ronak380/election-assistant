@@ -80,7 +80,7 @@ export default function PollingLocator() {
         version: 'weekly',
       } as any);
       const mapsLib = await importLibrary('maps') as typeof google.maps;
-      const { Marker } = await importLibrary('marker') as typeof google.maps.marker;
+      const { Marker } = await importLibrary('marker') as any;
       const { Map: GoogleMap, InfoWindow, Size, Point, SymbolPath } = mapsLib;
 
       const map = new GoogleMap(mapRef.current, {
