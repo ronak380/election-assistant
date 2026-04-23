@@ -89,6 +89,7 @@ export default function PollingLocator() {
         center,
         zoom: 14,
         mapTypeId: 'roadmap',
+        mapId: 'DEMO_MAP_ID', // Required for Advanced Markers
         styles: [
           { featureType: 'poi', stylers: [{ visibility: 'off' }] },
           { featureType: 'transit', stylers: [{ visibility: 'simplified' }] },

@@ -39,8 +39,8 @@ export function middleware(request: NextRequest): NextResponse {
     // Connections: self + Gemini API + Firebase + GA4 + Maps
     `connect-src 'self' https://*.googleapis.com https://*.google.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://www.google-analytics.com https://analytics.google.com https://fcm.googleapis.com`,
 
-    // Frames: deny all (no iframes needed)
-    `frame-src 'none'`,
+    // Frames: Allow Firebase auth and Google Maps components
+    `frame-src https://*.firebaseapp.com https://*.google.com https://*.google.co.in`,
 
     // Objects: block all plugins
     `object-src 'none'`,
@@ -55,7 +55,8 @@ export function middleware(request: NextRequest): NextResponse {
   response.headers.set('Content-Security-Policy', csp);
 
   // --- Framing Protection ---
-  response.headers.set('X-Frame-Options', 'DENY');
+  // Changed from DENY to SAMEORIGIN to allow Firebase popups/iframes to function correctly
+  response.headers.set('X-Frame-Options', 'SAMEORIGIN');
 
   // --- MIME Sniffing Protection ---
   response.headers.set('X-Content-Type-Options', 'nosniff');
