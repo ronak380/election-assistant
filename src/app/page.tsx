@@ -150,7 +150,7 @@ export default function HomePage() {
                   title: 'Election Reminders',
                   description:
                     'Subscribe to push notifications for important election deadlines like registration cutoffs and voting day.',
-                  href: '/assistant',
+                  href: '/assistant?topic=reminders',
                   cta: 'Set reminders →',
                   color: 'orange',
                 },
@@ -159,7 +159,7 @@ export default function HomePage() {
                   title: 'Voter Rights Guide',
                   description:
                     'Understand your rights at the polling place — what to do if you\'re turned away, how to request assistance, and more.',
-                  href: '/assistant',
+                  href: '/assistant?topic=rights',
                   cta: 'Learn your rights →',
                   color: 'red',
                 },
@@ -168,7 +168,7 @@ export default function HomePage() {
                   title: 'Mail-In Voting Guide',
                   description:
                     'Step-by-step walkthrough for requesting, completing, and returning a mail-in or absentee ballot correctly.',
-                  href: '/assistant',
+                  href: '/assistant?topic=mail-in',
                   cta: 'Learn more →',
                   color: 'teal',
                 },
