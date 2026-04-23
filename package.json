@@ -12,7 +12,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@google/genai": "^1.50.1",
+    "@google/generative-ai": "^0.21.0",
     "@googlemaps/js-api-loader": "^2.0.2",
     "@vis.gl/react-google-maps": "^1.8.3",
     "firebase": "^12.12.1",
