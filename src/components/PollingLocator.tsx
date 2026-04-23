@@ -73,6 +73,7 @@ export default function PollingLocator() {
     if (!mapRef.current) return;
     setStatus('loading-map');
 
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
     try {
       // @ts-ignore - The new v2 functional API uses 'key' instead of 'apiKey'
       setOptions({
