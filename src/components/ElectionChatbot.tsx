@@ -80,24 +80,7 @@ export default function ElectionChatbot() {
 
   useEffect(() => {
     setMounted(true);
-
-    // Deep link detection
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const topic = params.get('topic');
-      if (topic && messages.length === 0) {
-        let q = '';
-        if (topic === 'rights') q = 'What are my rights as a voter at the polling station?';
-        if (topic === 'reminders') q = 'How can I set up election reminders?';
-        if (topic === 'mail-in') q = 'How does mail-in voting work?';
-
-        if (q) {
-          sendMessage(q);
-          window.history.replaceState({}, '', window.location.pathname);
-        }
-      }
-    }
-  }, [messages.length, sendMessage]);
+  }, []);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -223,6 +206,25 @@ export default function ElectionChatbot() {
     },
     [input, sendMessage]
   );
+
+  /** Detect query parameters for deep linking on initial mount. */
+  useEffect(() => {
+    if (mounted && typeof window !== 'undefined' && messages.length === 0) {
+      const params = new URLSearchParams(window.location.search);
+      const topic = params.get('topic');
+      if (topic) {
+        let q = '';
+        if (topic === 'rights') q = 'What are my rights as a voter at the polling station?';
+        if (topic === 'reminders') q = 'How can I set up election reminders?';
+        if (topic === 'mail-in') q = 'How does mail-in voting work?';
+
+        if (q) {
+          sendMessage(q);
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+      }
+    }
+  }, [mounted, messages.length, sendMessage]);
 
   return (
     <section
