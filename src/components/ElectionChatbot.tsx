@@ -299,10 +299,20 @@ export default function ElectionChatbot() {
                   }
                   style={{ padding: '0.875rem 1.25rem', maxWidth: '80%', wordBreak: 'break-word' }}
                 >
-                  {/* Format assistant replies with line breaks */}
-                  {msg.content.split('\n').map((line, i) => (
-                    <p key={i} style={{ margin: i > 0 ? '0.375rem 0 0' : '0' }}>{line}</p>
-                  ))}
+                  {/* Basic Markdown Parser: Handles bold text (**) and line breaks */}
+                  {msg.content.split('\n').map((line, i) => {
+                    const parts = line.split(/(\*\*.*?\*\*)/g);
+                    return (
+                      <p key={i} style={{ margin: i > 0 ? '0.375rem 0 0' : '0' }}>
+                        {parts.map((part, index) => {
+                          if (part.startsWith('**') && part.endsWith('**')) {
+                            return <strong key={index}>{part.slice(2, -2)}</strong>;
+                          }
+                          return part;
+                        })}
+                      </p>
+                    );
+                  })}
                 </div>
                 <time
                   className="message-time"
