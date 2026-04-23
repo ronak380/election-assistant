@@ -61,7 +61,7 @@ export default function PollingLocator() {
   const [geofenceAlert, setGeofenceAlert] = useState<string | null>(null);
   const [selectedStation, setSelectedStation] = useState<PollingStation | null>(null);
 
-  const markersRef = useRef<google.maps.Marker[]>([]);
+  const markersRef = useRef<any[]>([]);
 
   /**
    * Initializes the Google Map and places markers for all polling stations.
