@@ -66,8 +66,8 @@ export async function generateElectionResponse(
     }
 
     return text;
-  } catch (error) {
-    console.error('[gemini] Fetch error:', error);
-    throw new Error('Failed to generate response from AI Assistant.');
+  } catch (error: any) {
+    console.error('[gemini] SDK error:', error);
+    throw error;
   }
 }
