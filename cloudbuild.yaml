@@ -15,7 +15,7 @@ steps:
   - name: 'node:22-alpine'
     id: 'install-deps'
     entrypoint: 'npm'
-    args: ['ci', '--ignore-scripts']
+    args: ['install', '--ignore-scripts']
     env:
       - 'NODE_ENV=development'
 
