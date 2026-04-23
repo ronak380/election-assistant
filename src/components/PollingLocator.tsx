@@ -62,6 +62,7 @@ export default function PollingLocator() {
   const [selectedStation, setSelectedStation] = useState<PollingStation | null>(null);
 
   const markersRef = useRef<any[]>([]);
+  const loadingRef = useRef(false);
 
   /**
    * Initializes the Google Map and places markers for all polling stations.
@@ -70,6 +71,8 @@ export default function PollingLocator() {
    * @param {LatLng} center - The coordinate to center the map on (user's location).
    */
   const initializeMap = useCallback(async (center: LatLng) => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
     if (!mapRef.current) return;
     setStatus('loading-map');
 
