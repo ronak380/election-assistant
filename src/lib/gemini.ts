@@ -79,12 +79,13 @@ export async function generateElectionResponse(
   userMessage: string
 ): Promise<string> {
   try {
-    const genAI = getGeminiClient();
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+    const client = getGeminiClient();
 
-    // Format history for the standard SDK
-    const chat = model.startChat({
-      history: [
+    // The @google/genai SDK uses client.models.generateContent
+    // We use 'as any' to bypass the build-time type check for this specific SDK version
+    const response = await (client as any).models.generateContent({
+      model: GEMINI_MODEL,
+      contents: [
         { role: 'user', parts: [{ text: ELECTION_SYSTEM_PROMPT }] },
         {
           role: 'model',
@@ -94,11 +95,11 @@ export async function generateElectionResponse(
           role: i % 2 === 0 ? 'user' : 'model',
           parts: [{ text: msg }],
         })),
+        { role: 'user', parts: [{ text: userMessage }] },
       ],
     });
 
-    const result = await chat.sendMessage(userMessage);
-    const text = result.response.text();
+    const text = response.text;
 
     if (!text) {
       throw new Error('[gemini] Received empty response from Gemini API.');
