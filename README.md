@@ -191,6 +191,22 @@ gcloud builds submit --config cloudbuild.yaml
 | **Security** | CSP, X-Frame-Options, rate limiting, Firebase token verification |
 | **Google services** | Gemini, Maps, Firebase Auth, Firestore, FCM, GA4, GTM, Cloud Run |
 | **Performance** | Response caching, static asset headers, fluid typography |
+| **Observability** | Structured JSON logging for Google Cloud Logging integration |
+
+---
+
+## 📊 BigQuery Analytics & Scaling
+
+### BigQuery Integration
+The application is pre-configured for BigQuery analytics. See `bigquery-schema.json` for the data structure. You can export:
+- AI Chat topic distribution
+- Cache efficiency metrics
+- Regional interest (via anonymised locator searches)
+
+### Scaling on Cloud Run
+- **Concurrency**: Set to 80 (default) to handle high-traffic spikes.
+- **CPU Allocation**: "Always allocated" recommended for minimum cold-start latency.
+- **Global Deployment**: Use [Cloud Run Global Load Balancing](https://cloud.google.com/run/docs/configuring/load-balancing) to serve Indian users from the `asia-south1` (Mumbai) region for sub-100ms latency.
 
 ---
 

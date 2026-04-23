@@ -14,6 +14,21 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 /**
+ * Structured logger for Google Cloud Logging compatibility.
+ * @param severity - Log severity level
+ * @param message - Main log message
+ * @param metadata - Optional structured metadata
+ */
+function log(severity: 'INFO' | 'WARNING' | 'ERROR', message: string, metadata: object = {}) {
+  console.log(JSON.stringify({
+    severity,
+    message,
+    timestamp: new Date().toISOString(),
+    ...metadata,
+  }));
+}
+
+/**
  * System prompt that constrains Gemini to only answer election-related questions.
  * Focused on the Indian election system for an Indian user base.
  */
@@ -30,7 +45,8 @@ Guidelines:
 - If asked about something unrelated to elections or civic processes, politely redirect the user.
 - Keep answers concise but thorough. Use numbered lists and bullet points for multi-step processes.
 - Format your response cleanly using Markdown.
-- Always encourage civic participation.`;
+- Always encourage civic participation.
+- Language Support: Detect the language of the user's query and respond in that same language (e.g., Hindi, Bengali, Telugu, Marathi, Tamil, etc.). If unsure, default to clear English.`;
 
 /**
  * Ordered list of Gemini models to try, from best to most available.
@@ -129,7 +145,7 @@ export async function generateElectionResponse(
   const cacheKey = getCacheKey(userMessage);
   const cached = responseCache.get(cacheKey);
   if (cached) {
-    console.info('[gemini] Cache hit for:', userMessage.slice(0, 60));
+    log('INFO', `[gemini] Cache hit for: ${userMessage.slice(0, 50)}...`, { cache_hit: true, prompt_preview: userMessage.slice(0, 50) });
     return cached;
   }
 
@@ -155,7 +171,7 @@ export async function generateElectionResponse(
 
   for (const modelName of MODEL_FALLBACK_CHAIN) {
     try {
-      console.info('[gemini] Trying model:', modelName);
+      log('INFO', `[gemini] Trying model: ${modelName}`, { model: modelName });
       const text = await tryModel(genAI, modelName, finalPrompt);
 
       // Cache the successful response
@@ -164,7 +180,7 @@ export async function generateElectionResponse(
       return text;
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
-      console.warn(`[gemini] Model ${modelName} failed:`, msg);
+      log('WARNING', `[gemini] Model ${modelName} failed`, { model: modelName, error: msg });
       errors.push(`${modelName}: ${msg}`);
     }
   }

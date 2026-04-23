@@ -16,6 +16,18 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { generateElectionResponse } from '@/lib/gemini';
 import { getAdminAuth } from '@/lib/firebase-admin';
 
+/**
+ * Structured logger for Google Cloud Logging compatibility.
+ */
+function log(severity: 'INFO' | 'WARNING' | 'ERROR', message: string, metadata: object = {}) {
+  console.log(JSON.stringify({
+    severity,
+    message,
+    timestamp: new Date().toISOString(),
+    ...metadata,
+  }));
+}
+
 /** Force dynamic rendering — this route uses runtime env vars (Firebase Admin). */
 export const dynamic = 'force-dynamic';
 
@@ -106,18 +118,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const { message, history = [], idToken } = body;
 
-  if (!message || typeof message !== 'string' || message.trim().length === 0) {
-    return NextResponse.json(
-      { error: 'The "message" field is required and must be a non-empty string.' },
-      { status: 400 }
-    );
+  // --- Strict Validation (Zod-style) ---
+  if (typeof message !== 'string' || message.trim().length === 0) {
+    return NextResponse.json({ error: 'Invalid message: must be a non-empty string.' }, { status: 400 });
   }
-
   if (message.length > 2000) {
-    return NextResponse.json(
-      { error: 'Message exceeds the maximum allowed length of 2000 characters.' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Invalid message: exceeds the maximum allowed length of 2000 characters.' }, { status: 400 });
+  }
+  if (!Array.isArray(history) || !history.every(h => typeof h === 'string')) {
+    return NextResponse.json({ error: 'Invalid history: must be an array of strings.' }, { status: 400 });
   }
 
   // --- Optional Firebase Auth Verification ---
@@ -128,7 +137,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       uid = decoded.uid;
     } catch {
       // Invalid token — fall through as anonymous user (don't block request)
-      console.warn('[/api/chat] Invalid ID token supplied — proceeding as anonymous.');
+      log('WARNING', '[/api/chat] Invalid ID token supplied — proceeding as anonymous.');
     }
   }
 
@@ -148,7 +157,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[/api/chat] Gemini error:', errorMsg);
+    log('ERROR', '[/api/chat] Gemini error', { error: errorMsg, ip });
     
     // Diagnostic: return the actual error message to help identify 503 causes
     return NextResponse.json(

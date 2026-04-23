@@ -131,6 +131,16 @@ html {
   text-size-adjust: 100%;
 }
 
+/* --- Accessibility: Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Custom Text Selection */
 ::selection {
   background-color: #3b82f6; /* Matching brand blue */

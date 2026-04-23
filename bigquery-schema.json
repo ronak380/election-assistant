@@ -1,0 +1,44 @@
+[
+  {
+    "name": "timestamp",
+    "type": "TIMESTAMP",
+    "mode": "REQUIRED",
+    "description": "When the interaction occurred"
+  },
+  {
+    "name": "interaction_type",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "Type of event (chat_message, timeline_view, locator_search)"
+  },
+  {
+    "name": "user_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Firebase UID (if authenticated)"
+  },
+  {
+    "name": "topic",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Category of the election query"
+  },
+  {
+    "name": "model_used",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Which Gemini model provided the response"
+  },
+  {
+    "name": "latency_ms",
+    "type": "INTEGER",
+    "mode": "NULLABLE",
+    "description": "Response time in milliseconds"
+  },
+  {
+    "name": "cache_hit",
+    "type": "BOOLEAN",
+    "mode": "NULLABLE",
+    "description": "Whether the response was served from LRU cache"
+  }
+]
