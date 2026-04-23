@@ -1,18 +1,8 @@
 /**
  * @file src/lib/gemini.ts
- * @description Initializes the Google Generative AI client (Vertex AI / Gemini 2.5)
+ * @description Initializes the Google Generative AI client (Direct Fetch)
  *              for server-side use only in Next.js API routes.
- *
- *              The API key / GCP credentials are NEVER sent to the browser.
- *              All Gemini interactions are proxied through the /api/chat endpoint.
- *
- * @see https://googleapis.github.io/js-genai/
  */
-
-import { GoogleGenAI, type GenerateContentResponse } from '@google/genai';
-
-/** The Gemini model to use — targeting Gemini 1.5 Flash for superior stability. */
-export const GEMINI_MODEL = 'gemini-1.5-flash';
 
 /**
  * System prompt that constrains Gemini to only answer election-related questions.
@@ -32,82 +22,52 @@ Guidelines:
 - Always encourage civic participation.`;
 
 /**
- * Singleton lazy-initialized Gemini AI client.
- */
-let geminiClient: GoogleGenAI | null = null;
-
-/**
- * Returns the singleton Gemini AI client instance.
- *
- * @returns {GoogleGenAI} The initialized Google Generative AI client.
- */
-export function getGeminiClient(): GoogleGenAI {
-  if (!geminiClient) {
-    // If using the @google/genai package, we typically need an API Key.
-    // However, if the user is using the Vertex AI shim in @google/genai,
-    // they need to provide project and location.
-    const project = process.env.GOOGLE_CLOUD_PROJECT;
-    const apiKey = process.env.GEMINI_API_KEY; // Fallback to API Key if present
-    const location = process.env.GOOGLE_CLOUD_LOCATION ?? 'europe-west1';
-
-    if (apiKey) {
-      geminiClient = new GoogleGenAI({ apiKey });
-    } else if (project) {
-      // Vertex AI initialization via @google/genai (if supported in this version)
-      // Note: For full Vertex AI features, @google-cloud/vertexai is preferred.
-      geminiClient = new GoogleGenAI({
-        // @ts-ignore - vertexai might not be in the types but is supported in the runtime for some versions
-        vertexai: true,
-        project,
-        location,
-      });
-    } else {
-      throw new Error(
-        '[gemini] Neither GEMINI_API_KEY nor GOOGLE_CLOUD_PROJECT is set.'
-      );
-    }
-  }
-
-  return geminiClient;
-}
-
-/**
  * Sends a single message to Gemini and returns the text response.
  */
 export async function generateElectionResponse(
   history: string[],
   userMessage: string
 ): Promise<string> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY is not set in environment variables.');
+  }
+
   try {
-    const client = getGeminiClient();
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [
+            { role: 'user', parts: [{ text: ELECTION_SYSTEM_PROMPT }] },
+            { role: 'model', parts: [{ text: 'Understood. I am ElectionGuide AI.' }] },
+            ...history.map((msg, i) => ({
+              role: i % 2 === 0 ? 'user' : 'model',
+              parts: [{ text: msg }],
+            })),
+            { role: 'user', parts: [{ text: userMessage }] },
+          ],
+        }),
+      }
+    );
 
-    // The @google/genai SDK uses client.models.generateContent
-    // We use 'as any' to bypass the build-time type check for this specific SDK version
-    const response = await (client as any).models.generateContent({
-      model: GEMINI_MODEL,
-      contents: [
-        { role: 'user', parts: [{ text: ELECTION_SYSTEM_PROMPT }] },
-        {
-          role: 'model',
-          parts: [{ text: 'Understood. I am ElectionGuide AI, ready to assist with election-related inquiries.' }],
-        },
-        ...history.map((msg, i) => ({
-          role: i % 2 === 0 ? 'user' : 'model',
-          parts: [{ text: msg }],
-        })),
-        { role: 'user', parts: [{ text: userMessage }] },
-      ],
-    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || 'API request failed');
+    }
 
-    const text = response.text;
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!text) {
-      throw new Error('[gemini] Received empty response from Gemini API.');
+      throw new Error('Received empty response from Gemini API.');
     }
 
     return text;
   } catch (error) {
-    console.error('[gemini] Generation error:', error);
+    console.error('[gemini] Fetch error:', error);
     throw new Error('Failed to generate response from AI Assistant.');
   }
 }
