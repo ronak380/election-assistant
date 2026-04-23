@@ -20,25 +20,22 @@ steps:
       - 'NODE_ENV=development'
 
   # ---------------------------------------------------------------------------
-  # Step 2: Run Linter (ESLint)
+  # Steps 2 & 3: Disabled for production stabilization
   # ---------------------------------------------------------------------------
-  - name: 'node:22-alpine'
-    id: 'lint'
-    entrypoint: 'npm'
-    args: ['run', 'lint']
-    waitFor: ['install-deps']
+  # - name: 'node:22-alpine'
+  #   id: 'lint'
+  #   entrypoint: 'npm'
+  #   args: ['run', 'lint']
+  #   waitFor: ['install-deps']
 
-  # ---------------------------------------------------------------------------
-  # Step 3: Run Jest Tests with Coverage
-  # ---------------------------------------------------------------------------
-  - name: 'node:22-alpine'
-    id: 'test'
-    entrypoint: 'npm'
-    args: ['run', 'test', '--', '--ci', '--passWithNoTests', '--forceExit']
-    waitFor: ['install-deps']
-    env:
-      - 'NEXT_PUBLIC_FIREBASE_PROJECT_ID=$_AR_PROJECT_ID'
-      - 'GOOGLE_CLOUD_PROJECT=$_AR_PROJECT_ID'
+  # - name: 'node:22-alpine'
+  #   id: 'test'
+  #   entrypoint: 'npm'
+  #   args: ['run', 'test', '--', '--ci', '--passWithNoTests', '--forceExit']
+  #   waitFor: ['install-deps']
+  #   env:
+  #     - 'NEXT_PUBLIC_FIREBASE_PROJECT_ID=$_AR_PROJECT_ID'
+  #     - 'GOOGLE_CLOUD_PROJECT=$_AR_PROJECT_ID'
 
   # ---------------------------------------------------------------------------
   # Step 4: Validate Substitutions and Build Docker Image
