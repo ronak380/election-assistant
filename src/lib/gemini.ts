@@ -31,38 +31,33 @@ export async function generateElectionResponse(
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = new GoogleGenerativeAI(apiKey.trim());
     
-    // Helper function to try a specific model
-    const tryModel = async (modelName: string) => {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const chat = model.startChat({
-        history: [
-          { role: 'user', parts: [{ text: ELECTION_SYSTEM_PROMPT }] },
-          { role: 'model', parts: [{ text: 'Understood. I am ElectionGuide AI.' }] },
-          ...history.map((msg, i) => ({
-            role: i % 2 === 0 ? 'user' : 'model',
-            parts: [{ text: msg }],
-          })),
-        ],
-      });
-      const result = await chat.sendMessage(userMessage);
-      return result.response.text();
-    };
+    // Use the exact model and configuration that worked in CrowdFlow.
+    // We use the official 'systemInstruction' property to drastically reduce 
+    // the complexity of the request history, avoiding the 503 High Demand trigger.
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-2.5-flash',
+      systemInstruction: ELECTION_SYSTEM_PROMPT
+    });
 
-    try {
-      // Primary attempt with the latest Flash model
-      const text = await tryModel('gemini-2.5-flash');
-      if (!text) throw new Error('Received empty response from Gemini API.');
-      return text;
-    } catch (primaryError: any) {
-      console.warn(`[gemini] Primary model failed (${primaryError.message}). Attempting fallback...`);
-      // Fallback to the highly stable Gemini 2.0 Flash model (since 1.5 is retired)
-      const fallbackText = await tryModel('gemini-2.0-flash');
-      if (!fallbackText) throw new Error('Received empty response from fallback model.');
-      return fallbackText;
+    // Format history as a single string to reduce object payload size
+    let conversationText = '';
+    if (history.length > 0) {
+      conversationText = 'Previous Conversation:\n' + history.map((msg, i) => {
+        return (i % 2 === 0 ? 'User: ' : 'Assistant: ') + msg;
+      }).join('\n') + '\n\n';
     }
 
+    const finalPrompt = `${conversationText}User Question: ${userMessage}`;
+    const result = await model.generateContent(finalPrompt);
+    const text = result.response.text();
+
+    if (!text) {
+      throw new Error('Received empty response from Gemini API.');
+    }
+
+    return text;
   } catch (error: any) {
     console.error('[gemini] SDK error:', error);
     throw error;
