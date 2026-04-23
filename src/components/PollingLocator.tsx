@@ -96,6 +96,18 @@ export default function PollingLocator() {
       });
       mapInstanceRef.current = map;
 
+      // Find and sort nearby stations
+      const nearby = SAMPLE_STATIONS
+        .map((s) => ({ ...s, distance: haversineDistance(center, s.location) }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, 5);
+
+      setNearbyStations(nearby);
+
+      // Place markers for each station
+      nearby.forEach((station) => {
+        const distanceStr = `${haversineDistance(center, station.location).toFixed(1)}km`;
+        
         const pin = new PinElement({
           background: '#2563eb',
           borderColor: 'white',
@@ -108,33 +120,6 @@ export default function PollingLocator() {
           map,
           title: `${station.name} (${distanceStr})`,
           content: pin.element,
-        });
-
-      // Find and sort nearby stations
-      const nearby = SAMPLE_STATIONS
-        .map((s) => ({ ...s, distance: haversineDistance(center, s.location) }))
-        .sort((a, b) => a.distance - b.distance)
-        .slice(0, 5);
-
-      setNearbyStations(nearby);
-
-      // Place markers for each station
-      nearby.forEach((station) => {
-        const distanceStr = `${haversineDistance(center, station.location).toFixed(1)}km`;
-        const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-          <path fill="#2563eb" d="M24 0C13.5 0 5 8.5 5 19c0 12.5 19 29 19 29s19-16.5 19-29C43 8.5 34.5 0 24 0z"/>
-          <text x="24" y="24" text-anchor="middle" fill="white" font-size="12" font-family="system-ui, sans-serif" font-weight="bold">${distanceStr}</text>
-        </svg>`;
-        
-        const marker = new Marker({
-          position: station.location,
-          map,
-          title: `${station.name} (${distanceStr})`,
-          icon: {
-            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svgString),
-            scaledSize: new Size(48, 48),
-            anchor: new Point(24, 48),
-          },
         });
 
         markersRef.current.push(marker);
