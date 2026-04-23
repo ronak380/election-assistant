@@ -57,8 +57,8 @@ export async function generateElectionResponse(
       return text;
     } catch (primaryError: any) {
       console.warn(`[gemini] Primary model failed (${primaryError.message}). Attempting fallback...`);
-      // If the primary model fails (especially 503 High Demand), fallback to the ultra-stable Pro model
-      const fallbackText = await tryModel('gemini-1.5-pro');
+      // Fallback to the highly stable Gemini 2.0 Flash model (since 1.5 is retired)
+      const fallbackText = await tryModel('gemini-2.0-flash');
       if (!fallbackText) throw new Error('Received empty response from fallback model.');
       return fallbackText;
     }
