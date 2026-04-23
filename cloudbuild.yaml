@@ -41,12 +41,19 @@ steps:
       - 'GOOGLE_CLOUD_PROJECT=$_AR_PROJECT_ID'
 
   # ---------------------------------------------------------------------------
-  # Step 4: Build Docker Image
-  # Uses your existing _AR_HOSTNAME / _AR_REPOSITORY variables.
-  # NEXT_PUBLIC_* vars are baked in here at build time as --build-arg.
-  # Runtime secrets (Firebase Admin, Vertex AI) are NOT passed here —
-  # they are set directly in Cloud Run environment variables / Secret Manager.
+  # Step 4: Validate Substitutions and Build Docker Image
   # ---------------------------------------------------------------------------
+  - name: 'bash'
+    id: 'check-substitutions'
+    args:
+      - '-c'
+      - |
+        echo "Validating critical substitutions..."
+        if [ -z "$_FIREBASE_API_KEY" ]; then echo "ERROR: _FIREBASE_API_KEY is missing"; exit 1; fi
+        if [ -z "$_FIREBASE_AUTH_DOMAIN" ]; then echo "ERROR: _FIREBASE_AUTH_DOMAIN is missing"; exit 1; fi
+        if [ -z "$_MAPS_API_KEY" ]; then echo "ERROR: _MAPS_API_KEY is missing"; exit 1; fi
+        echo "All critical substitutions are present."
+
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build-image'
     args:

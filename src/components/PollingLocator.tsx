@@ -20,7 +20,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Loader, importLibrary } from '@googlemaps/js-api-loader';
+import { importLibrary } from '@googlemaps/js-api-loader';
 import { haversineDistance, isWithinGeofence, type LatLng, type PollingStation } from '@/lib/geofence';
 import { trackPollingStationSearch } from '@/lib/analytics';
 
@@ -73,11 +73,11 @@ export default function PollingLocator() {
     if (!mapRef.current) return;
     setStatus('loading-map');
 
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
     try {
-      // v2.x API: Loader sets config; importLibrary() does the actual loading
-      new Loader({ apiKey, version: 'weekly' });
-      const mapsLib = await importLibrary('maps') as typeof google.maps;
+      const mapsLib = await importLibrary('maps', {
+        apiKey,
+        version: 'weekly',
+      }) as typeof google.maps;
       const { Map: GoogleMap, Marker, InfoWindow, Size, Point, SymbolPath } = mapsLib;
 
       const map = new GoogleMap(mapRef.current, {
