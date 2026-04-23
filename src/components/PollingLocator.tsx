@@ -122,19 +122,20 @@ export default function PollingLocator() {
 
       // Place markers for each station
       nearby.forEach((station) => {
+        const distanceStr = `${haversineDistance(center, station.location).toFixed(1)}km`;
+        const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+          <path fill="#2563eb" d="M24 0C13.5 0 5 8.5 5 19c0 12.5 19 29 19 29s19-16.5 19-29C43 8.5 34.5 0 24 0z"/>
+          <text x="24" y="24" text-anchor="middle" fill="white" font-size="12" font-family="system-ui, sans-serif" font-weight="bold">${distanceStr}</text>
+        </svg>`;
+        
         const marker = new Marker({
           position: station.location,
           map,
-          title: station.name,
+          title: `${station.name} (${distanceStr})`,
           icon: {
-            url:
-              'data:image/svg+xml;base64,' +
-              btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
-                <path fill="#2563eb" d="M16 0C7.163 0 0 7.163 0 16c0 10.5 16 24 16 24S32 26.5 32 16C32 7.163 24.837 0 16 0z"/>
-                <text x="16" y="22" text-anchor="middle" fill="white" font-size="14">🗳️</text>
-              </svg>`),
-            scaledSize: new Size(32, 40),
-            anchor: new Point(16, 40),
+            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svgString),
+            scaledSize: new Size(48, 48),
+            anchor: new Point(24, 48),
           },
         });
 
