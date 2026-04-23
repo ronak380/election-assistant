@@ -79,9 +79,8 @@ export default function PollingLocator() {
         key: apiKey,
         version: 'weekly',
       } as any);
-      const mapsLib = await importLibrary('maps') as typeof google.maps;
-      const { Marker } = await importLibrary('marker') as any;
-      const { Map: GoogleMap, InfoWindow, Size, Point, SymbolPath } = mapsLib;
+      const { Map: GoogleMap, InfoWindow } = await importLibrary('maps') as google.maps.MapsLibrary;
+      const { AdvancedMarkerElement, PinElement } = await importLibrary('marker') as google.maps.MarkerLibrary;
 
       const map = new GoogleMap(mapRef.current, {
         center,
@@ -97,20 +96,19 @@ export default function PollingLocator() {
       });
       mapInstanceRef.current = map;
 
-      // User location marker
-      new Marker({
-        position: center,
-        map,
-        title: 'Your Location',
-        icon: {
-          path: 0, // SymbolPath.CIRCLE
-          fillColor: '#2563eb',
-          fillOpacity: 1,
-          strokeColor: 'white',
-          strokeWeight: 2,
-          scale: 10,
-        },
-      });
+        const pin = new PinElement({
+          background: '#2563eb',
+          borderColor: 'white',
+          glyphColor: 'white',
+          scale: 1.2,
+        });
+
+        const marker = new AdvancedMarkerElement({
+          position: station.location,
+          map,
+          title: `${station.name} (${distanceStr})`,
+          content: pin.element,
+        });
 
       // Find and sort nearby stations
       const nearby = SAMPLE_STATIONS
@@ -170,6 +168,8 @@ export default function PollingLocator() {
     } catch (err) {
       console.error('[PollingLocator] Map initialization error:', err);
       setStatus('unavailable');
+    } finally {
+      loadingRef.current = false;
     }
   }, []);
 
