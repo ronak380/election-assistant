@@ -30,11 +30,11 @@ import { trackPollingStationSearch } from '@/lib/analytics';
  * seeded with official government election authority data.
  */
 const SAMPLE_STATIONS: PollingStation[] = [
-  { id: 'ps-001', name: 'City Hall — Main Polling Center', address: '100 City Hall Plaza', location: { lat: 37.7749, lng: -122.4194 } },
-  { id: 'ps-002', name: 'Civic Center Library', address: '555 Larkin Street', location: { lat: 37.7820, lng: -122.4159 } },
-  { id: 'ps-003', name: 'Mission Community Center', address: '362 Capp Street', location: { lat: 37.7610, lng: -122.4183 } },
-  { id: 'ps-004', name: 'Richmond Branch Library', address: '351 9th Avenue', location: { lat: 37.7835, lng: -122.4650 } },
-  { id: 'ps-005', name: 'Sunset Recreation Center', address: '2201 Lawton Street', location: { lat: 37.7580, lng: -122.4882 } },
+  { id: 'ps-mumbai-001', name: 'Ghatkopar East Municipal School', address: '9, Pant Nagar, Ghatkopar East, Mumbai 400075', location: { lat: 19.0835, lng: 72.9100 } },
+  { id: 'ps-mumbai-002', name: 'Sardar Vallabhbhai Patel Vidyalaya', address: 'Near Inox, Neelyog Square, Mumbai 400077', location: { lat: 19.0810, lng: 72.9125 } },
+  { id: 'ps-mumbai-003', name: 'Vikas High School & College', address: 'Vikhroli East, Mumbai 400083', location: { lat: 19.1050, lng: 72.9250 } },
+  { id: 'ps-mumbai-004', name: 'Don Bosco High School', address: 'Kurla West, Mumbai 400070', location: { lat: 19.0700, lng: 72.8850 } },
+  { id: 'ps-mumbai-005', name: 'Powai English High School', address: 'Tunga Village, Powai, Mumbai 400072', location: { lat: 19.1200, lng: 72.8950 } },
 ];
 
 /** Status messages shown to the user. */
@@ -228,7 +228,7 @@ export default function PollingLocator() {
             <span className="gradient-text">Find Your Polling Station</span>
           </h2>
           <p className="section-subtitle">
-            We&apos;ll use your location to find the nearest polling stations and alert you when you&apos;re nearby.
+            Powered by Gemini 2.0 — ask anything about the voting process.
           </p>
         </header>
 
