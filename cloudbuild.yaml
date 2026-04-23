@@ -87,7 +87,7 @@ steps:
       - '--cache-from'
       - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:latest'
       - '.'
-    waitFor: ['test', 'lint']
+    waitFor: ['check-substitutions']
 
   # ---------------------------------------------------------------------------
   # Step 5: Push Image to Artifact Registry
