@@ -147,10 +147,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
     );
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[/api/chat] Gemini error:', message);
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[/api/chat] Gemini error:', errorMsg);
+    
+    // Diagnostic: return the actual error message to help identify 503 causes
     return NextResponse.json(
-      { error: 'The AI assistant is temporarily unavailable. Please try again.' },
+      { error: `AI Assistant Error: ${errorMsg}` },
       { status: 503 }
     );
   }
