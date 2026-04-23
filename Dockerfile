@@ -65,6 +65,10 @@ ENV NEXT_PUBLIC_GTM_ID=$NEXT_PUBLIC_GTM_ID
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
+# --- Validation: Fail build if critical keys are missing ---
+RUN if [ -z "$NEXT_PUBLIC_FIREBASE_API_KEY" ]; then echo "FATAL ERROR: NEXT_PUBLIC_FIREBASE_API_KEY is empty at build time. Check your Trigger Substitutions."; exit 1; fi
+RUN if [ -z "$NEXT_PUBLIC_GOOGLE_MAPS_API_KEY" ]; then echo "FATAL ERROR: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is empty at build time. Check your Trigger Substitutions."; exit 1; fi
+
 # Build the Next.js application
 RUN npm run build
 

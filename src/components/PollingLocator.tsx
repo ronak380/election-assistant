@@ -97,7 +97,7 @@ export default function PollingLocator() {
       mapInstanceRef.current = map;
 
       // User location marker
-      new Marker({
+      new mapsLib.Marker({
         position: center,
         map,
         title: 'Your Location',
