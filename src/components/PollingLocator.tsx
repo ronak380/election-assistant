@@ -75,11 +75,10 @@ export default function PollingLocator() {
 
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
     try {
-      // @ts-ignore - The new v2 functional API uses 'key' instead of 'apiKey'
       setOptions({
         key: apiKey,
         version: 'weekly',
-      });
+      } as any);
       const mapsLib = await importLibrary('maps') as typeof google.maps;
       const { Map: GoogleMap, Marker, InfoWindow, Size, Point, SymbolPath } = mapsLib;
 
