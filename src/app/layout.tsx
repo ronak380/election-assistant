@@ -42,11 +42,20 @@ export const metadata: Metadata = {
     title: 'ElectionGuide — Your Interactive Election Assistant',
     description: 'Navigate the election process with confidence using our AI-powered guide.',
     siteName: 'ElectionGuide',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'ElectionGuide — Your Interactive Election Assistant',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'ElectionGuide — Your Interactive Election Assistant',
     description: 'Navigate the election process with confidence using our AI-powered guide.',
+    images: ['/og-image.png'],
   },
   robots: {
     index: true,
@@ -91,8 +100,52 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap"
           rel="stylesheet"
         />
+
+        {/* Google Analytics 4 */}
+        {GA4_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA4_ID}', {
+                  page_path: window.location.pathname,
+                });
+              `}
+            </Script>
+          </>
+        )}
+
+        {/* Google Tag Manager */}
+        {GTM_ID && (
+          <Script id="gtm-script" strategy="afterInteractive">
+            {`
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','${GTM_ID}');
+            `}
+          </Script>
+        )}
       </head>
       <body>
+        {/* Google Tag Manager (noscript) */}
+        {GTM_ID && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+              height="0"
+              width="0"
+              style={{ display: 'none', visibility: 'hidden' }}
+            />
+          </noscript>
+        )}
 
         {/*
           Skip Navigation Link — WCAG 2.1 Success Criterion 2.4.1
