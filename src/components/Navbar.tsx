@@ -158,7 +158,12 @@ export default function Navbar() {
             )}
 
             {/* Mobile Toggle */}
-            <button className="hamburger-btn icon-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <button 
+              className="hamburger-btn icon-btn" 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-expanded={isMenuOpen}
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            >
                {isMenuOpen ? '✕' : '☰'}
             </button>
           </div>

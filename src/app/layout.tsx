@@ -10,6 +10,7 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import './globals.css';
+import ConfigGuard from '@/components/ConfigGuard';
 
 /** Google Tag Manager container ID from environment variables. */
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID ?? '';
@@ -81,7 +82,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en-IN">
       <head>
         {/* Preconnect to Google Fonts and Maps for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -106,7 +107,9 @@ export default function RootLayout({
           Skip to main content
         </a>
 
-        {children}
+        <ConfigGuard>
+          {children}
+        </ConfigGuard>
       </body>
     </html>
   );
