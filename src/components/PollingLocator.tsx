@@ -80,7 +80,7 @@ export default function PollingLocator() {
     try {
       setOptions({
         key: apiKey,
-        version: 'weekly',
+        v: 'weekly',
       });
       const { Map: GoogleMap, InfoWindow } = await importLibrary('maps') as google.maps.MapsLibrary;
       const { AdvancedMarkerElement, PinElement } = await importLibrary('marker') as google.maps.MarkerLibrary;
