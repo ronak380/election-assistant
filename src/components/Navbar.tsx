@@ -116,7 +116,7 @@ export default function Navbar() {
         <div className="container navbar-inner">
           {/* Logo / Brand */}
           <Link href="/" className="navbar-brand">
-            <span className="brand-icon">🗳️</span>
+            <span className="brand-icon" role="img" aria-label="Ballot box icon">🗳️</span>
             <span className="brand-name gradient-text">ElectionGuide</span>
           </Link>
 
@@ -148,7 +148,13 @@ export default function Navbar() {
             {/* Auth button */}
             {user ? (
               <div className="user-menu">
-                <img src={user.photoURL || ''} alt="" className="user-avatar" width={32} height={32} />
+                <img 
+                  src={user.photoURL || ''} 
+                  alt={user.displayName || 'User Profile'} 
+                  className="user-avatar" 
+                  width={32} 
+                  height={32} 
+                />
                 <button onClick={handleSignOut} className="btn btn-ghost">Sign Out</button>
               </div>
             ) : (

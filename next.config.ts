@@ -25,6 +25,7 @@ const nextConfig: NextConfig = {
    * Enables double-invoking lifecycle hooks to surface side effects.
    */
   reactStrictMode: true,
+  poweredByHeader: false,
 
   /**
    * Allow images from Google and Firebase domains to be optimised
