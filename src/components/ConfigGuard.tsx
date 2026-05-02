@@ -32,7 +32,12 @@ export default function ConfigGuard({ children }: ConfigGuardProps) {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const missing = REQUIRED_KEYS.filter(key => !process.env[key]);
+    const missing: string[] = [];
+    if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) missing.push('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY');
+    if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) missing.push('NEXT_PUBLIC_FIREBASE_API_KEY');
+    if (!process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN) missing.push('NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN');
+    if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) missing.push('NEXT_PUBLIC_FIREBASE_PROJECT_ID');
+    
     setMissingKeys(missing);
     setIsReady(true);
   }, []);
