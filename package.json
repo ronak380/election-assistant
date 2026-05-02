@@ -9,6 +9,7 @@
     "lint": "eslint src --ext .ts,.tsx",
     "test": "jest --passWithNoTests",
     "test:coverage": "jest --coverage --passWithNoTests",
+    "test:e2e": "playwright test",
     "prepare": "husky"
   },
   "dependencies": {
@@ -44,7 +45,8 @@
     "lint-staged": "^16.4.0",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@playwright/test": "^1.50.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
