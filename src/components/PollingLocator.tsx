@@ -61,7 +61,7 @@ export default function PollingLocator() {
   const [geofenceAlert, setGeofenceAlert] = useState<string | null>(null);
   const [selectedStation, setSelectedStation] = useState<PollingStation | null>(null);
 
-  const markersRef = useRef<any[]>([]);
+  const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
   const loadingRef = useRef(false);
 
   /**
@@ -81,7 +81,7 @@ export default function PollingLocator() {
       setOptions({
         key: apiKey,
         version: 'weekly',
-      } as any);
+      });
       const { Map: GoogleMap, InfoWindow } = await importLibrary('maps') as google.maps.MapsLibrary;
       const { AdvancedMarkerElement, PinElement } = await importLibrary('marker') as google.maps.MarkerLibrary;
 
@@ -155,7 +155,12 @@ export default function PollingLocator() {
 
       setStatus('found');
     } catch (err) {
-      console.error('[PollingLocator] Map initialization error:', err);
+      console.log(JSON.stringify({
+        severity: 'ERROR',
+        message: '[PollingLocator] Map initialization error',
+        error: err instanceof Error ? err.message : String(err),
+        timestamp: new Date().toISOString()
+      }));
       setStatus('unavailable');
     } finally {
       loadingRef.current = false;
@@ -190,6 +195,11 @@ export default function PollingLocator() {
         setUserLocation(fallback);
         initializeMap(fallback);
         trackPollingStationSearch(false);
+        console.log(JSON.stringify({
+          severity: 'WARNING',
+          message: '[PollingLocator] Geolocation denied by user, using fallback',
+          timestamp: new Date().toISOString()
+        }));
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );

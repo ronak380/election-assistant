@@ -165,15 +165,15 @@ describe('generateElectionResponse — model fallback chain', () => {
     expect(mockGenerateContent).toHaveBeenCalledTimes(2);
   });
 
-  it('tries all 3 models before throwing', async () => {
+  it('tries all 4 models before throwing', async () => {
     mockFailure('Service unavailable');
 
     await expect(
       generateElectionResponse([], 'Fail all models test')
     ).rejects.toThrow('All Gemini models failed');
 
-    // Should have tried all 3 models
-    expect(mockGenerateContent).toHaveBeenCalledTimes(3);
+    // Should have tried all 4 models
+    expect(mockGenerateContent).toHaveBeenCalledTimes(4);
   });
 
   it('succeeds on the third model after two failures', async () => {
@@ -185,6 +185,18 @@ describe('generateElectionResponse — model fallback chain', () => {
     const result = await generateElectionResponse([], 'Third model test');
     expect(result).toBe('Third model success');
     expect(mockGenerateContent).toHaveBeenCalledTimes(3);
+  });
+
+  it('succeeds on the fourth model after three failures', async () => {
+    mockGenerateContent
+      .mockRejectedValueOnce(new Error('Error 1'))
+      .mockRejectedValueOnce(new Error('Error 2'))
+      .mockRejectedValueOnce(new Error('Error 3'))
+      .mockResolvedValueOnce({ response: { text: () => 'Fourth model success' } });
+
+    const result = await generateElectionResponse([], 'Fourth model test');
+    expect(result).toBe('Fourth model success');
+    expect(mockGenerateContent).toHaveBeenCalledTimes(4);
   });
 });
 

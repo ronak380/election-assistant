@@ -57,6 +57,7 @@ const MODEL_FALLBACK_CHAIN = [
   'gemini-2.5-flash',
   'gemini-2.0-flash',
   'gemini-1.5-flash',
+  'gemini-1.5-flash-8b',
 ] as const;
 
 /** Maximum number of cached responses to keep in memory. LRU eviction. */
@@ -109,7 +110,30 @@ async function tryModel(
   const model = genAI.getGenerativeModel({
     model: modelName,
     systemInstruction: ELECTION_SYSTEM_PROMPT,
-  });
+    generationConfig: {
+      temperature: 0.7,
+      topP: 0.9,
+      maxOutputTokens: 1024,
+    },
+    safetySettings: [
+      {
+        category: 'HARM_CATEGORY_HARASSMENT',
+        threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+      },
+      {
+        category: 'HARM_CATEGORY_HATE_SPEECH',
+        threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+      },
+      {
+        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+        threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+      },
+      {
+        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+        threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+      },
+    ],
+  } as any);
 
   const result = await model.generateContent(finalPrompt);
   const text = result.response.text();

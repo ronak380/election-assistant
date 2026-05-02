@@ -42,6 +42,14 @@ const config = {
 
   // Module file resolution order
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+
+  // Ensure ESM-only modules are transformed by babel-jest
+  transformIgnorePatterns: [
+    '/node_modules/(?!(react-markdown|@google/generative-ai|vfile|vfile-message|unist-util-stringify-position|unified|bail|is-plain-obj|trough|remark-parse|remark-rehype|rehype-stringify|decode-named-character-reference|character-entities|markdown-table|property-information|hast-util-whitespace|space-separated-tokens|comma-separated-tokens|hast-util-to-html|hast-util-sanitize|hast-util-from-parse5|parse5|hast-util-parse-selector|hast-util-has-property|hast-util-is-element|hastscript|web-namespaces|hast-util-to-jsx-runtime)/)',
+  ],
+
+  // Increase timeout for async AI/Map mocks
+  testTimeout: 10000,
 };
 
 module.exports = config;
