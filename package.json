@@ -9,7 +9,6 @@
     "lint": "next lint",
     "test": "jest --passWithNoTests",
     "test:coverage": "jest --coverage --passWithNoTests",
-    "test:e2e": "playwright test",
     "prepare": "husky"
   },
   "dependencies": {
@@ -46,7 +45,7 @@
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "typescript": "^5",
-    "@playwright/test": "^1.50.0"
+    "prettier": "^3.4.2"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

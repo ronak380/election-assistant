@@ -10,7 +10,6 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import './globals.css';
-import ConfigGuard from '@/components/ConfigGuard';
 
 /** Google Tag Manager container ID from environment variables. */
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID ?? '';
@@ -179,9 +178,7 @@ export default function RootLayout({
           Skip to main content
         </a>
 
-        <ConfigGuard>
-          {children}
-        </ConfigGuard>
+        {children}
       </body>
     </html>
   );
