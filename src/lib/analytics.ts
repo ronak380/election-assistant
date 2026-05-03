@@ -20,6 +20,13 @@ interface GA4EventParams {
   [key: string]: string | number | boolean | undefined;
 }
 
+/** Extending Window interface for gtag support */
+declare global {
+  interface Window {
+    gtag?: (command: string, eventName: string, params?: GA4EventParams) => void;
+  }
+}
+
 /**
  * Sends a custom event to Google Analytics 4 via the global gtag function.
  * Safe to call in any environment — no-ops if gtag is not present (SSR, tests).
@@ -33,8 +40,7 @@ interface GA4EventParams {
 export function trackEvent(eventName: string, params: GA4EventParams = {}): void {
   if (typeof window === 'undefined' || !('gtag' in window)) return;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (window as any).gtag('event', eventName, params);
+  window.gtag?.('event', eventName, params);
 }
 
 /**
